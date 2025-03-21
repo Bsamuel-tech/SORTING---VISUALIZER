@@ -14,6 +14,7 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
         }
         .header {
             text-align: center;
@@ -116,6 +117,30 @@
         .close:hover {
             color: black;
         }
+        /* Group Members Button Styles */
+        .group-members-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            z-index: 100;
+            background-color: #27ae60;
+            color: white;
+        }
+        /* Group Members Modal Styles */
+        #membersModal .modal-content {
+            max-width: 700px;
+        }
+        .member-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .member-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .member-list li:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body>
@@ -171,6 +196,9 @@
             <div id="time">Time: 0.00 seconds</div>
             <div id="status" style="margin-left: auto; font-weight: bold;">Status: Ready</div>
         </div>
+        
+        <!-- Group Members Button -->
+        <button id="membersBtn" class="button group-members-btn">Group 18 Members</button>
     </div>
 
     <!-- Custom Array Modal -->
@@ -191,6 +219,25 @@
             <h2 id="algoTitle">Algorithm Information</h2>
             <div id="algoInfo"></div>
             <button id="closeInfoBtn" class="button button-primary" style="margin-top: 20px;">Close</button>
+        </div>
+    </div>
+    
+    <!-- Group Members Modal -->
+    <div id="membersModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Group 18 Members</h2>
+            <ul class="member-list">
+                <li>1. Koduah Tweneboah ADADE 20697472</li>
+                <li>2. Elisha Nunana AKABUA 20886349</li>
+                <li>3. Peter Kwame APPIAH 20883504</li>
+                <li>4. Omari Yaw ASIAMAH 20901762</li>
+                <li>5. Kwadwo Wiredu BOAKYE YIADOM 20944253</li>
+                <li>6. Ferdinand Collins DOMEH 20895057</li>
+                <li>7. Bizimana SAMUEL 21457954</li>
+                <li>8. Temiloluwa Ifedapo TITILOYE 20928856</li>
+            </ul>
+            <button id="closeMembers" class="button button-primary" style="margin-top: 20px;">Close</button>
         </div>
     </div>
 
@@ -225,6 +272,11 @@
         const algoTitle = document.getElementById('algoTitle');
         const algoInfo = document.getElementById('algoInfo');
         const closeInfoBtn = document.getElementById('closeInfoBtn');
+        
+        // Group Members Elements
+        const membersBtn = document.getElementById('membersBtn');
+        const membersModal = document.getElementById('membersModal');
+        const closeMembers = document.getElementById('closeMembers');
 
         // Variables
         let array = [];
@@ -291,12 +343,17 @@
             resetBtn.addEventListener('click', generateRandomArray);
             customBtn.addEventListener('click', () => customModal.style.display = 'block');
             infoBtn.addEventListener('click', showAlgorithmInfo);
+            
+            // Group Members Button
+            membersBtn.addEventListener('click', () => membersModal.style.display = 'block');
+            closeMembers.addEventListener('click', () => membersModal.style.display = 'none');
 
             // Modal close buttons
             document.querySelectorAll('.close').forEach(closeBtn => {
                 closeBtn.addEventListener('click', () => {
                     customModal.style.display = 'none';
                     infoModal.style.display = 'none';
+                    membersModal.style.display = 'none';
                 });
             });
 
