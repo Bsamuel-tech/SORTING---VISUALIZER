@@ -545,59 +545,91 @@ Temiloluwa Ifedapo TITILOYE  - 20928856
         }
     
         function* mergeSort(arr) {
-            function* merge(left, right) {
-                let result = [];
-                let leftIndex = 0, rightIndex = 0;
-                
-                while (leftIndex < left.length && rightIndex < right.length) {
-                    yield { compares: [leftIndex, rightIndex] };
-                    comparisons++;
-                    
-                    if (left[leftIndex] <= right[rightIndex]) {
-                        result.push(left[leftIndex]);
-                        leftIndex++;
-                    } else {
-                        result.push(right[rightIndex]);
-                        rightIndex++;
-                    }
-                    
-                    arrayAccesses++;
-                    yield { array: [...arr], highlights: [leftIndex, rightIndex] };
-                }
-                
-                // Add remaining elements
-                while (leftIndex < left.length) {
-                    result.push(left[leftIndex]);
-                    leftIndex++;
-                    arrayAccesses++;
-                }
-                
-                while (rightIndex < right.length) {
-                    result.push(right[rightIndex]);
-                    rightIndex++;
-                    arrayAccesses++;
-                }
-                
-                return result;
-            }
-            
-            function* mergeSortRecursive(arr) {
-                if (arr.length <= 1) return arr;
-                
-                const mid = Math.floor(arr.length / 2);
-                const left = arr.slice(0, mid);
-                const right = arr.slice(mid);
-                
-                const sortedLeft = yield* mergeSortRecursive(left);
-                const sortedRight = yield* mergeSortRecursive(right);
-                
-                const merged = yield* merge(sortedLeft, sortedRight);
-                return merged;
-            }
-            
-            return yield* mergeSortRecursive(arr);
-        }
+    // Create a copy of the original array to work with
+    let tempArray = [...arr];
     
+    function* mergeSortHelper(start, end) {
+        // Base case: if the array segment has 1 or fewer elements, it's already sorted
+        if (end - start <= 1) return;
+        
+        // Calculate the middle point
+        const mid = Math.floor((start + end) / 2);
+        
+        // Recursively sort the left and right halves
+        yield* mergeSortHelper(start, mid);
+        yield* mergeSortHelper(mid, end);
+        
+        // Merge the sorted halves
+        yield* merge(start, mid, end);
+    }
+    
+    function* merge(start, mid, end) {
+        // Create temporary arrays for the left and right segments
+        const leftSize = mid - start;
+        const rightSize = end - mid;
+        const left = new Array(leftSize);
+        const right = new Array(rightSize);
+        
+        // Copy data to temporary arrays
+        for (let i = 0; i < leftSize; i++) {
+            left[i] = tempArray[start + i];
+            arrayAccesses++;
+        }
+        
+        for (let i = 0; i < rightSize; i++) {
+            right[i] = tempArray[mid + i];
+            arrayAccesses++;
+        }
+        
+        // Merge the temporary arrays back into the original array
+        let i = 0, j = 0, k = start;
+        
+        while (i < leftSize && j < rightSize) {
+            // Compare elements from both subarrays
+            yield { compares: [start + i, mid + j] };
+            comparisons++;
+            
+            if (left[i] <= right[j]) {
+                tempArray[k] = left[i];
+                arr[k] = left[i]; // Update the original array for visualization
+                i++;
+            } else {
+                tempArray[k] = right[j];
+                arr[k] = right[j]; // Update the original array for visualization
+                j++;
+            }
+            
+            arrayAccesses++;
+            yield { array: [...arr], highlights: [k] };
+            k++;
+        }
+        
+        // Copy remaining elements from left subarray if any
+        while (i < leftSize) {
+            tempArray[k] = left[i];
+            arr[k] = left[i]; // Update the original array for visualization
+            arrayAccesses++;
+            yield { array: [...arr], highlights: [k] };
+            i++;
+            k++;
+        }
+        
+        // Copy remaining elements from right subarray if any
+        while (j < rightSize) {
+            tempArray[k] = right[j];
+            arr[k] = right[j]; // Update the original array for visualization
+            arrayAccesses++;
+            yield { array: [...arr], highlights: [k] };
+            j++;
+            k++;
+        }
+    }
+    
+    // Start the merge sort process
+    yield* mergeSortHelper(0, arr.length);
+    
+    return arr;
+}
         function* quickSort(arr) {
             function* partition(low, high) {
                 const pivot = arr[high];
